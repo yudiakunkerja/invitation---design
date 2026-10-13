@@ -177,15 +177,6 @@ export const InvitationView: React.FC<InvitationViewProps> = ({
               </button>
             )}
 
-            {onSwitchToDashboard && (
-              <button
-                onClick={onSwitchToDashboard}
-                type="button"
-                className="px-3.5 py-1.5 bg-[#2c261e] hover:bg-black text-[#faf8f5] rounded-lg text-xs font-medium tracking-wider uppercase transition-colors whitespace-nowrap shrink-0 cursor-pointer shadow-xs"
-              >
-                Dasbor
-              </button>
-            )}
           </div>
         </div>
       </header>

@@ -3,6 +3,7 @@ import {
   Camera,
   Check,
   CreditCard,
+  Eye,
   Heart,
   HelpCircle,
   Image as ImageIcon,
@@ -30,6 +31,7 @@ interface EventSettingsModalProps {
   onClose: () => void;
   onSaveConfig: (updated: WeddingConfig) => void;
   onResetData: () => void;
+  onPreviewInvitation?: () => void;
 }
 
 export const EventSettingsModal: React.FC<EventSettingsModalProps> = ({
@@ -38,6 +40,7 @@ export const EventSettingsModal: React.FC<EventSettingsModalProps> = ({
   onClose,
   onSaveConfig,
   onResetData,
+  onPreviewInvitation,
 }) => {
   const [activeTab, setActiveTab] = useState<
     'theme-music' | 'couple' | 'events' | 'photos' | 'story' | 'banks'
@@ -1550,6 +1553,21 @@ export const EventSettingsModal: React.FC<EventSettingsModalProps> = ({
               >
                 Batal
               </button>
+
+              {onPreviewInvitation && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onSaveConfig(formData);
+                    onPreviewInvitation();
+                  }}
+                  className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-lg font-medium transition-colors cursor-pointer text-xs uppercase tracking-wider flex items-center gap-1.5"
+                  title="Simpan perubahan dan buka tampilan undangan tamu"
+                >
+                  <Eye className="w-3.5 h-3.5 text-[#8a724d]" />
+                  <span>Lihat Undangan</span>
+                </button>
+              )}
 
               <button
                 type="submit"

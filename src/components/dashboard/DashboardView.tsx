@@ -167,13 +167,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <Megaphone className="w-3.5 h-3.5" />
               <span>Panduan Promosi Jasa</span>
             </button>
-            <button
-              type="button"
-              onClick={() => setIsSettingsModalOpen(true)}
-              className="whitespace-nowrap shrink-0 hover:text-stone-900 transition-colors cursor-pointer"
-            >
-              Pengaturan Acara
-            </button>
           </nav>
 
           {/* Zone 3: Primary Action */}

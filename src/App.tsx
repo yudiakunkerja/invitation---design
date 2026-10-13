@@ -68,7 +68,7 @@ export default function App() {
   const [isNavHovered, setIsNavHovered] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
 
-  // Auto-hide navigation on scroll down, reveal on scroll up
+  // Auto-hide navigation on scroll down, reveal on scroll up or mouse hover near top
   useEffect(() => {
     let idleTimer: ReturnType<typeof setTimeout>;
 
@@ -94,9 +94,18 @@ export default function App() {
       }, 4000);
     };
 
+    const handleMouseMove = (e: MouseEvent) => {
+      // Hovering near the top edge of viewport smoothly reveals navigation
+      if (e.clientY < 45) {
+        setIsNavVisible(true);
+      }
+    };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('mousemove', handleMouseMove);
       clearTimeout(idleTimer);
     };
   }, [lastScrollY, isNavHovered]);
@@ -489,10 +498,10 @@ export default function App() {
 
   return (
     <div className="min-h-screen">
-      {/* AUTO-HIDDEN FLOATING NAVIGATION */}
+      {/* AUTO-HIDDEN FLOATING NAVIGATION DOCK */}
       {/* 1. Minimized trigger pill (shown when navigation is auto-hidden) */}
       <div
-        className={`no-print fixed top-4 right-4 z-40 transition-all duration-300 transform ${
+        className={`no-print fixed top-3 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 transform ${
           !isNavVisible && !isNavHovered
             ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto'
             : 'opacity-0 -translate-y-4 scale-95 pointer-events-none'
@@ -501,10 +510,10 @@ export default function App() {
         <button
           type="button"
           onClick={() => setIsNavVisible(true)}
-          className="bg-stone-900/90 hover:bg-stone-950 backdrop-blur-md text-stone-200 hover:text-white px-3.5 py-2 rounded-full shadow-xl border border-white/10 flex items-center gap-2 text-xs font-medium cursor-pointer transition-transform hover:scale-105 group"
+          className="bg-stone-900/90 hover:bg-stone-950 backdrop-blur-md text-stone-200 hover:text-white px-4 py-1.5 rounded-full shadow-xl border border-white/10 flex items-center gap-2 text-xs font-medium cursor-pointer transition-transform hover:scale-105 group"
           title="Tampilkan Menu Navigasi"
         >
-          <Compass className="w-4 h-4 text-amber-400 group-hover:rotate-45 transition-transform" />
+          <Compass className="w-3.5 h-3.5 text-amber-400 group-hover:rotate-45 transition-transform" />
           <span>Navigasi</span>
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
         </button>
@@ -514,14 +523,14 @@ export default function App() {
       <div
         onMouseEnter={() => setIsNavHovered(true)}
         onMouseLeave={() => setIsNavHovered(false)}
-        className={`no-print fixed top-4 right-4 z-40 transition-all duration-300 transform ${
+        className={`no-print fixed top-3 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 transform ${
           isNavVisible || isNavHovered
             ? 'opacity-100 translate-y-0 pointer-events-auto'
-            : 'opacity-0 -translate-y-8 pointer-events-none'
+            : 'opacity-0 -translate-y-12 pointer-events-none'
         }`}
       >
-        <div className="bg-stone-900/95 hover:bg-stone-950 backdrop-blur-md text-white px-3 py-2 rounded-2xl shadow-2xl border border-white/15 flex items-center gap-1.5 text-xs">
-          <div className="flex items-center gap-1.5 text-[11px] text-stone-400 pr-1.5 border-r border-white/10 hidden sm:flex">
+        <div className="bg-stone-900/95 hover:bg-stone-950 backdrop-blur-md text-white px-3.5 py-1.5 rounded-2xl shadow-2xl border border-white/15 flex items-center gap-1.5 text-xs">
+          <div className="flex items-center gap-1.5 text-[11px] text-stone-400 pr-2 border-r border-white/10 hidden sm:flex">
             <Compass className="w-3.5 h-3.5 text-amber-400" />
             <span className="font-semibold text-stone-300">Navigasi</span>
           </div>
@@ -533,7 +542,7 @@ export default function App() {
               setCurrentView('portal');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className={`px-2.5 py-1.5 rounded-xl font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
               currentView === 'portal'
                 ? 'bg-[#8a724d] text-white shadow-xs'
                 : 'text-stone-300 hover:text-white hover:bg-stone-800/80'
@@ -541,14 +550,14 @@ export default function App() {
             title="Menu tampilan untuk melihat dan memesan undangan (seperti undgn.id)"
           >
             <Store className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Toko Pemesanan</span>
+            <span>Toko Pemesanan</span>
           </button>
 
           {/* 2. Tombol Pengaturan Undangan (Menggantikan tombol Undangan sesuai permintaan) */}
           <button
             type="button"
             onClick={() => setIsGlobalSettingsOpen(true)}
-            className="px-2.5 py-1.5 rounded-xl font-medium transition-all cursor-pointer flex items-center gap-1.5 bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 hover:text-amber-200 border border-amber-500/30 shadow-xs group"
+            className="px-3 py-1.5 rounded-xl font-medium transition-all cursor-pointer flex items-center gap-1.5 bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 hover:text-amber-200 border border-amber-500/30 shadow-xs group"
             title={`Buka Pengaturan Undangan: ${activeOrder.config.groom.nickName} & ${activeOrder.config.bride.nickName} (Tema, Musik YouTube, Foto Mempelai, Rangkaian Acara, Rekening/QRIS, Galeri, dll.)`}
           >
             <Settings className="w-3.5 h-3.5 text-amber-300 group-hover:rotate-45 transition-transform" />
@@ -565,7 +574,7 @@ export default function App() {
               setCurrentView('orders-list');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className={`px-2.5 py-1.5 rounded-xl font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
               currentView === 'orders-list' || currentView === 'wedding-dashboard'
                 ? 'bg-[#8a724d] text-white shadow-xs'
                 : 'text-stone-300 hover:text-white hover:bg-stone-800/80'
@@ -573,32 +582,14 @@ export default function App() {
             title="Menu dasbor daftar seluruh pesanan & acara pernikahan"
           >
             <LayoutDashboard className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Dasbor Pesanan</span>
+            <span>Dasbor Pesanan</span>
           </button>
 
-          {/* 4. Pratinjau Tampilan Undangan Tamu */}
-          <button
-            type="button"
-            onClick={() => {
-              setCurrentView('invitation');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            className={`px-2 py-1.5 rounded-xl font-medium transition-colors cursor-pointer flex items-center gap-1 ${
-              currentView === 'invitation'
-                ? 'bg-stone-800 text-amber-300 border border-amber-400/30'
-                : 'text-stone-400 hover:text-stone-200 hover:bg-stone-800/50'
-            }`}
-            title="Pratinjau tampilan undangan tamu"
-          >
-            <Eye className="w-3.5 h-3.5" />
-            <span className="text-[11px] hidden lg:inline">Lihat Tamu</span>
-          </button>
-
-          {/* 5. Tombol Sembunyikan Navigasi (Auto-hide toggle manual) */}
+          {/* 4. Tombol Sembunyikan Navigasi (Auto-hide toggle manual) */}
           <button
             type="button"
             onClick={() => setIsNavVisible(false)}
-            className="p-1 text-stone-400 hover:text-white rounded-lg hover:bg-stone-800/80 transition-colors cursor-pointer ml-0.5"
+            className="p-1 text-stone-400 hover:text-white rounded-lg hover:bg-stone-800/80 transition-colors cursor-pointer ml-1"
             title="Sembunyikan navigasi otomatis"
           >
             <ChevronUp className="w-3.5 h-3.5" />
@@ -673,6 +664,11 @@ export default function App() {
         onClose={() => setIsGlobalSettingsOpen(false)}
         onSaveConfig={handleSaveActiveConfig}
         onResetData={handleResetData}
+        onPreviewInvitation={() => {
+          setIsGlobalSettingsOpen(false);
+          setCurrentView('invitation');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
       />
     </div>
   );

@@ -131,16 +131,6 @@ export const OrdersListView: React.FC<OrdersListViewProps> = ({
           <div className="flex items-center gap-2.5">
             <button
               type="button"
-              onClick={onOpenStorePortal}
-              className="px-3 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer"
-              title="Buka Toko / Halaman Pemesanan Tamu (seperti undgn.id)"
-            >
-              <Store className="w-3.5 h-3.5 text-[#8a724d]" />
-              <span className="hidden sm:inline">Toko &amp; Pemesanan</span>
-            </button>
-
-            <button
-              type="button"
               onClick={() => setIsAddModalOpen(true)}
               className="px-4 py-2 bg-[#8a724d] hover:bg-[#735e3d] text-white rounded-lg text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
             >

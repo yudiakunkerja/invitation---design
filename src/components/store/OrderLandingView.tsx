@@ -224,20 +224,10 @@ export const OrderLandingView: React.FC<OrderLandingViewProps> = ({
           <div className="flex items-center gap-2.5">
             <button
               type="button"
-              onClick={() => onOpenSampleInvitation()}
-              className="px-3.5 py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-lg text-xs font-medium transition-colors cursor-pointer flex items-center gap-1.5"
+              onClick={() => scrollToSection('pesan')}
+              className="px-4 py-2 bg-[#8a724d] hover:bg-[#735e3d] text-white rounded-lg text-xs font-semibold uppercase tracking-wider shadow-xs transition-colors cursor-pointer"
             >
-              <Mail className="w-3.5 h-3.5 text-[#8a724d]" />
-              <span className="hidden sm:inline">Lihat Contoh</span> Undangan
-            </button>
-
-            <button
-              type="button"
-              onClick={onOpenDashboard}
-              className="px-4 py-2 bg-[#8a724d] hover:bg-[#735e3d] text-white rounded-lg text-xs font-medium uppercase tracking-wider shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
-            >
-              <LayoutDashboard className="w-3.5 h-3.5" />
-              <span>Dasbor Admin</span>
+              <span>Mulai Buat Pesanan</span>
             </button>
           </div>
         </div>

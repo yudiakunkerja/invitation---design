@@ -1,0 +1,6 @@
+{
+  "name": "NitiLestari - Undangan Digital & Dasbor RSVP Tamu",
+  "description": "Undangan digital pernikahan elegan dengan fitur RSVP interaktif dan dasbor manajemen daftar tamu pengantin real-time.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

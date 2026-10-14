@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Camera,
   Check,
+  ChevronDown,
   CreditCard,
   Eye,
   Heart,
@@ -24,6 +25,7 @@ import {
 import { BankAccount, GalleryPhotoItem, StoryMilestone, WeddingConfig } from '../../types/wedding';
 import { WeddingThemeId } from '../../types/theme';
 import { extractYouTubeId } from '../../utils/youtubeAudio';
+import { AiHolyQuotesPicker } from './AiHolyQuotesPicker';
 
 interface EventSettingsModalProps {
   config: WeddingConfig;
@@ -47,6 +49,8 @@ export const EventSettingsModal: React.FC<EventSettingsModalProps> = ({
   >('theme-music');
 
   const [formData, setFormData] = useState<WeddingConfig>(config);
+
+  const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -261,84 +265,128 @@ export const EventSettingsModal: React.FC<EventSettingsModalProps> = ({
           {/* TAB 1: TEMA & MUSIK YOUTUBE DIRECT */}
           {activeTab === 'theme-music' && (
             <div className="space-y-6">
-              {/* Pilihan Tema Server */}
+              {/* Pilihan Tema: Hanya munculkan tombol 'Ubah Tema' saja dengan dropdown sesuai permintaan */}
               <div className="p-4 bg-stone-50 rounded-xl border border-stone-200">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-bold text-stone-900 text-sm flex items-center gap-1.5">
-                    <Palette className="w-4 h-4 text-[#8a724d]" />
-                    <span>Pilihan Desain Tema Undangan</span>
-                  </h4>
-                  <span className="text-[10px] text-stone-500 uppercase">Aktif: {formData.theme}</span>
-                </div>
-                <p className="text-xs text-stone-500 mb-3">
-                  Pilih gaya visual undangan. Setiap tema memiliki harmoni tipografi, warna, dan ornamen yang unik:
-                </p>
-
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {[
-                    {
-                      id: 'champagne',
-                      name: 'Champagne Royal Gold',
-                      color: '#8A724D',
-                      bg: '#faf8f5',
-                      desc: 'Mewah, hangat & elegan khas editorial high-end',
-                    },
-                    {
-                      id: 'emerald',
-                      name: 'Emerald Botanical Garden',
-                      color: '#2D6A4F',
-                      bg: '#f4f7f4',
-                      desc: 'Nuansa hijau sage & dedaunan segar bernuansa alam',
-                    },
-                    {
-                      id: 'rose',
-                      name: 'Rose Blush & Velvet',
-                      color: '#A84458',
-                      bg: '#faf5f6',
-                      desc: 'Romantis lembut dengan palet blush & crimson anggun',
-                    },
-                    {
-                      id: 'navy',
-                      name: 'Midnight Sapphire',
-                      color: '#1E3A8A',
-                      bg: '#f4f7fb',
-                      desc: 'Elegan klasik bernuansa royal blue & perak kontemporer',
-                    },
-                    {
-                      id: 'heritage',
-                      name: 'Jawa Sogan & Batik Heritage',
-                      color: '#78350F',
-                      bg: '#fcf8f2',
-                      desc: 'Kehangatan tradisi Jawa dengan sentuhan sogan modern',
-                    },
-                  ].map((t) => (
-                    <button
-                      key={t.id}
-                      type="button"
-                      onClick={() => setFormData({ ...formData, theme: t.id as WeddingThemeId })}
-                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
-                        formData.theme === t.id
-                          ? 'border-[#8a724d] ring-2 ring-[#8a724d]/30 bg-white shadow-xs'
-                          : 'border-stone-200 bg-white hover:border-stone-300'
-                      }`}
-                    >
-                      <div>
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span
-                            className="w-4 h-4 rounded-full border border-black/10 shrink-0"
-                            style={{ backgroundColor: t.color }}
-                          />
-                          {formData.theme === t.id && (
-                            <span className="text-[10px] font-bold text-[#8a724d] flex items-center gap-0.5">
-                              <Check className="w-3 h-3" /> Terpilih
-                            </span>
-                          )}
-                        </div>
-                        <div className="font-semibold text-stone-900 text-xs">{t.name}</div>
-                        <div className="text-[10px] text-stone-500 mt-1 leading-snug">{t.desc}</div>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="w-5 h-5 rounded-full border border-black/15 shadow-xs shrink-0"
+                      style={{
+                        backgroundColor:
+                          formData.theme === 'emerald'
+                            ? '#2D6A4F'
+                            : formData.theme === 'rose'
+                            ? '#A84458'
+                            : formData.theme === 'navy'
+                            ? '#1E3A8A'
+                            : formData.theme === 'heritage'
+                            ? '#78350F'
+                            : '#8A724D',
+                      }}
+                    />
+                    <div>
+                      <div className="text-[10px] text-stone-500 uppercase tracking-wider font-semibold">
+                        Tema Aktif Pesanan
                       </div>
+                      <div className="font-bold text-stone-900 text-sm">
+                        {formData.theme === 'emerald'
+                          ? 'Emerald Botanical Garden'
+                          : formData.theme === 'rose'
+                          ? 'Rose Blush & Velvet'
+                          : formData.theme === 'navy'
+                          ? 'Midnight Sapphire'
+                          : formData.theme === 'heritage'
+                          ? 'Jawa Sogan & Batik Heritage'
+                          : 'Champagne Royal Gold'}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tombol Ubah Tema Tunggal */}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setIsThemeDropdownOpen(!isThemeDropdownOpen)}
+                      className="px-4 py-2 bg-white hover:bg-stone-100 text-stone-800 border border-stone-300 rounded-xl text-xs font-semibold shadow-xs flex items-center gap-2 cursor-pointer transition-all"
+                    >
+                      <Palette className="w-3.5 h-3.5 text-[#8a724d]" />
+                      <span>Ubah Tema</span>
+                      <ChevronDown
+                        className={`w-3.5 h-3.5 text-stone-500 transition-transform ${
+                          isThemeDropdownOpen ? 'rotate-180' : ''
+                        }`}
+                      />
                     </button>
-                  ))}
+
+                    {/* Dropdown Menu Pilihan Tema */}
+                    {isThemeDropdownOpen && (
+                      <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-xl border border-stone-200 z-50 p-2 space-y-1">
+                        <div className="px-3 py-1.5 text-[10px] font-bold uppercase text-stone-400 tracking-wider">
+                          Pilih Tema Baru
+                        </div>
+                        {[
+                          {
+                            id: 'champagne',
+                            name: 'Champagne Royal Gold',
+                            color: '#8A724D',
+                            desc: 'Mewah, hangat & elegan khas editorial high-end',
+                          },
+                          {
+                            id: 'emerald',
+                            name: 'Emerald Botanical Garden',
+                            color: '#2D6A4F',
+                            desc: 'Nuansa hijau sage & dedaunan segar bernuansa alam',
+                          },
+                          {
+                            id: 'rose',
+                            name: 'Rose Blush & Velvet',
+                            color: '#A84458',
+                            desc: 'Romantis lembut dengan palet blush & crimson anggun',
+                          },
+                          {
+                            id: 'navy',
+                            name: 'Midnight Sapphire',
+                            color: '#1E3A8A',
+                            desc: 'Elegan klasik bernuansa royal blue & perak kontemporer',
+                          },
+                          {
+                            id: 'heritage',
+                            name: 'Jawa Sogan & Batik Heritage',
+                            color: '#78350F',
+                            desc: 'Kehangatan tradisi Jawa dengan sentuhan sogan modern',
+                          },
+                        ].map((t) => (
+                          <button
+                            key={t.id}
+                            type="button"
+                            onClick={() => {
+                              setFormData({ ...formData, theme: t.id as WeddingThemeId });
+                              setIsThemeDropdownOpen(false);
+                            }}
+                            className={`w-full p-2.5 rounded-xl text-left transition-all cursor-pointer flex items-center justify-between ${
+                              formData.theme === t.id
+                                ? 'bg-amber-50 text-[#8a724d] font-semibold'
+                                : 'hover:bg-stone-100 text-stone-700'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <span
+                                className="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0"
+                                style={{ backgroundColor: t.color }}
+                              />
+                              <div>
+                                <div className="text-xs">{t.name}</div>
+                                <div className="text-[10px] text-stone-400 font-normal">{t.desc}</div>
+                              </div>
+                            </div>
+                            {formData.theme === t.id && (
+                              <Check className="w-4 h-4 text-[#8a724d] shrink-0" />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -520,9 +568,9 @@ export const EventSettingsModal: React.FC<EventSettingsModalProps> = ({
               {/* Judul & Kutipan Utama Undangan */}
               <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-3">
                 <h4 className="font-bold text-stone-900 text-sm">
-                  Judul &amp; Kutipan Mutiara (Quotes)
+                  Judul &amp; Kutipan Mutiara / Ayat Suci
                 </h4>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div>
                     <label className="block text-stone-700 font-medium mb-1">
                       Judul Acara Utama
@@ -535,12 +583,20 @@ export const EventSettingsModal: React.FC<EventSettingsModalProps> = ({
                     />
                   </div>
 
+                  {/* AI Online Holy Quotes Picker */}
+                  <AiHolyQuotesPicker
+                    currentQuote={formData.quote || { text: '', source: '' }}
+                    onSelectQuote={(q) => setFormData({ ...formData, quote: q })}
+                    groomName={formData.groom.nickName}
+                    brideName={formData.bride.nickName}
+                  />
+
                   <div>
                     <label className="block text-stone-700 font-medium mb-1">
-                      Isi Kutipan / Ayat Suci
+                      Isi Kutipan / Ayat Suci (Dapat Diedit Manual)
                     </label>
                     <textarea
-                      rows={2}
+                      rows={3}
                       value={formData.quote?.text || ''}
                       onChange={(e) =>
                         setFormData({
@@ -548,7 +604,7 @@ export const EventSettingsModal: React.FC<EventSettingsModalProps> = ({
                           quote: { ...(formData.quote || { source: '' }), text: e.target.value },
                         })
                       }
-                      className="w-full px-3 py-2 border border-stone-300 rounded-lg"
+                      className="w-full px-3 py-2 border border-stone-300 rounded-lg text-xs font-serif leading-relaxed"
                     />
                   </div>
 
@@ -565,7 +621,7 @@ export const EventSettingsModal: React.FC<EventSettingsModalProps> = ({
                           quote: { ...(formData.quote || { text: '' }), source: e.target.value },
                         })
                       }
-                      className="w-full px-3 py-2 border border-stone-300 rounded-lg"
+                      className="w-full px-3 py-2 border border-stone-300 rounded-lg font-medium"
                     />
                   </div>
                 </div>

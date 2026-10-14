@@ -3,6 +3,7 @@ import {
   Calendar,
   CheckCircle2,
   Clock,
+  Copy,
   Eye,
   FileSpreadsheet,
   HelpCircle,
@@ -51,6 +52,14 @@ export const OrdersListView: React.FC<OrdersListViewProps> = ({
   const [newClientPhone, setNewClientPhone] = useState('');
   const [newPackage, setNewPackage] = useState<PackageTier>('Gold');
   const [newDate, setNewDate] = useState('2026-11-20');
+  const [copiedOrdersLink, setCopiedOrdersLink] = useState(false);
+
+  const handleCopyOrdersLink = () => {
+    const ordersUrl = `${window.location.origin}${window.location.pathname}?view=pesanan`;
+    navigator.clipboard.writeText(ordersUrl);
+    setCopiedOrdersLink(true);
+    setTimeout(() => setCopiedOrdersLink(false), 2500);
+  };
 
   // Filtered orders
   const filteredOrders = orders.filter((ord) => {
@@ -129,6 +138,16 @@ export const OrdersListView: React.FC<OrdersListViewProps> = ({
           </div>
 
           <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={handleCopyOrdersLink}
+              className="px-2.5 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-xs font-mono inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+              title="Salin Tautan Link Dasbor Pesanan: /?view=pesanan"
+            >
+              <Copy className="w-3.5 h-3.5 text-[#8a724d]" />
+              <span className="hidden sm:inline">{copiedOrdersLink ? 'Tautan Disalin!' : 'Link: /?view=pesanan'}</span>
+            </button>
+
             <button
               type="button"
               onClick={() => setIsAddModalOpen(true)}

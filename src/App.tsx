@@ -126,11 +126,19 @@ export default function App() {
       }
     }
 
-    if (viewParam === 'portal' || viewParam === 'store') {
+    if (viewParam === 'portal' || viewParam === 'store' || viewParam === 'toko') {
       setCurrentView('portal');
-    } else if (viewParam === 'dashboard' || viewParam === 'admin') {
+    } else if (viewParam === 'pengaturan') {
+      setCurrentView('wedding-dashboard');
+    } else if (viewParam === 'pesanan' || viewParam === 'orders' || viewParam === 'orders-list') {
       setCurrentView('orders-list');
-    } else if (viewParam === 'invitation' || toParam) {
+    } else if (viewParam === 'dashboard' || viewParam === 'admin') {
+      if (orderParam) {
+        setCurrentView('wedding-dashboard');
+      } else {
+        setCurrentView('orders-list');
+      }
+    } else if (viewParam === 'invitation' || viewParam === 'undangan' || toParam) {
       setCurrentView('invitation');
     }
 
@@ -453,11 +461,39 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // NAVIGATION ROUTING HELPER WITH CLEAN URL SYNC
+  const navigateToView = (
+    view: 'portal' | 'orders-list' | 'wedding-dashboard' | 'invitation',
+    orderId?: string
+  ) => {
+    setCurrentView(view);
+    const targetOrderId = orderId || activeOrderId;
+    try {
+      const url = new URL(window.location.href);
+      if (view === 'portal') {
+        url.searchParams.set('view', 'toko');
+        url.searchParams.delete('order');
+      } else if (view === 'orders-list') {
+        url.searchParams.set('view', 'pesanan');
+        url.searchParams.delete('order');
+      } else if (view === 'wedding-dashboard') {
+        url.searchParams.set('view', 'pengaturan');
+        url.searchParams.set('order', targetOrderId);
+      } else if (view === 'invitation') {
+        url.searchParams.set('view', 'undangan');
+        url.searchParams.set('order', targetOrderId);
+      }
+      window.history.replaceState(null, '', url.toString());
+    } catch {
+      // ignore
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // ORDER MANAGEMENT HANDLERS (for OrdersListView)
   const handleSelectOrder = (orderId: string) => {
     setActiveOrderId(orderId);
-    setCurrentView('wedding-dashboard');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigateToView('wedding-dashboard', orderId);
   };
 
   const handleViewInvitationForOrder = (orderId: string) => {
@@ -468,8 +504,7 @@ export default function App() {
     } else {
       setActiveGuest(null);
     }
-    setCurrentView('invitation');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigateToView('invitation', orderId);
   };
 
   const handleDeleteOrder = (orderId: string) => {
@@ -478,11 +513,14 @@ export default function App() {
     if (activeOrderId === orderId && remaining.length > 0) {
       setActiveOrderId(remaining[0].id);
     }
+    localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(remaining));
   };
 
   const handleCreateNewOrder = (newOrder: WeddingOrder) => {
-    setOrders([newOrder, ...orders]);
+    const updated = [newOrder, ...orders];
+    setOrders(updated);
     setActiveOrderId(newOrder.id);
+    localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(updated));
   };
 
   const handleClearAllOrders = () => {
@@ -538,16 +576,13 @@ export default function App() {
           {/* 1. Toko & Katalog Pemesanan */}
           <button
             type="button"
-            onClick={() => {
-              setCurrentView('portal');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
+            onClick={() => navigateToView('portal')}
             className={`px-3 py-1.5 rounded-xl font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
               currentView === 'portal'
-                ? 'bg-[#8a724d] text-white shadow-xs'
+                ? 'bg-[#8a724d] text-white shadow-xs font-semibold'
                 : 'text-stone-300 hover:text-white hover:bg-stone-800/80'
             }`}
-            title="Menu tampilan untuk melihat dan memesan undangan (seperti undgn.id)"
+            title="Menu Toko Pemesanan: /?view=toko"
           >
             <Store className="w-3.5 h-3.5" />
             <span>Toko Pemesanan</span>
@@ -556,9 +591,16 @@ export default function App() {
           {/* 2. Tombol Pengaturan Undangan (Menggantikan tombol Undangan sesuai permintaan) */}
           <button
             type="button"
-            onClick={() => setIsGlobalSettingsOpen(true)}
-            className="px-3 py-1.5 rounded-xl font-medium transition-all cursor-pointer flex items-center gap-1.5 bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 hover:text-amber-200 border border-amber-500/30 shadow-xs group"
-            title={`Buka Pengaturan Undangan: ${activeOrder.config.groom.nickName} & ${activeOrder.config.bride.nickName} (Tema, Musik YouTube, Foto Mempelai, Rangkaian Acara, Rekening/QRIS, Galeri, dll.)`}
+            onClick={() => {
+              navigateToView('wedding-dashboard');
+              setIsGlobalSettingsOpen(true);
+            }}
+            className={`px-3 py-1.5 rounded-xl font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
+              currentView === 'wedding-dashboard'
+                ? 'bg-[#8a724d] text-white shadow-xs font-semibold'
+                : 'bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 hover:text-amber-200 border border-amber-500/30'
+            }`}
+            title={`Buka Pengaturan Undangan: ${activeOrder.config.groom.nickName} & ${activeOrder.config.bride.nickName} (/?view=pengaturan)`}
           >
             <Settings className="w-3.5 h-3.5 text-amber-300 group-hover:rotate-45 transition-transform" />
             <span className="font-semibold">Pengaturan Undangan</span>
@@ -570,16 +612,13 @@ export default function App() {
           {/* 3. Dasbor Utama: Daftar Pesanan */}
           <button
             type="button"
-            onClick={() => {
-              setCurrentView('orders-list');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
+            onClick={() => navigateToView('orders-list')}
             className={`px-3 py-1.5 rounded-xl font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
-              currentView === 'orders-list' || currentView === 'wedding-dashboard'
-                ? 'bg-[#8a724d] text-white shadow-xs'
+              currentView === 'orders-list'
+                ? 'bg-[#8a724d] text-white shadow-xs font-semibold'
                 : 'text-stone-300 hover:text-white hover:bg-stone-800/80'
             }`}
-            title="Menu dasbor daftar seluruh pesanan & acara pernikahan"
+            title="Menu Dasbor Pesanan: /?view=pesanan"
           >
             <LayoutDashboard className="w-3.5 h-3.5" />
             <span>Dasbor Pesanan</span>
@@ -604,14 +643,15 @@ export default function App() {
             if (themeId) {
               handleSelectTheme(themeId);
             }
-            setCurrentView('invitation');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigateToView('invitation');
           }}
           onOpenDashboard={() => {
-            setCurrentView('orders-list');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigateToView('orders-list');
           }}
           onCreateNewOrder={handleCreateNewOrder}
+          onGoToOrderDashboard={(ordId) => {
+            handleSelectOrder(ordId);
+          }}
         />
       ) : currentView === 'orders-list' ? (
         <OrdersListView
@@ -622,7 +662,7 @@ export default function App() {
           onCreateOrder={handleCreateNewOrder}
           onClearAllOrders={handleClearAllOrders}
           onLoadDemoOrders={handleLoadDemoOrders}
-          onOpenStorePortal={() => setCurrentView('portal')}
+          onOpenStorePortal={() => navigateToView('portal')}
         />
       ) : currentView === 'wedding-dashboard' ? (
         <DashboardView
